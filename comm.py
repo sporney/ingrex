@@ -1,4 +1,7 @@
+"COMM monitor"
 import ingrex
+import time
+import datetime
 
 def main():
     "main function"
@@ -11,14 +14,19 @@ def main():
     with open('cookies') as cookies:
         cookies = cookies.read().strip()
 
-    intel = ingrex.Intel(cookies, field)
+    mints = -1
 
-    result = intel.fetch_msg()
-
-    for item in result:
-
-
-    print(result)
+    while True:
+        intel = ingrex.Intel(cookies, field)
+        result = intel.fetch_msg(mints)
+        if result:
+            mints = result[0][1] + 1
+        print(mints)
+        for item in result[::-1]:
+            date = datetime.datetime.fromtimestamp(item[1] // 1000)
+            date += datetime.timedelta(milliseconds=(item[1] % 1000))
+            print('{} {}'.format(date.strftime('%Y/%m/%d %H:%M:%S:%f')[:-3], item[2]['plext']['text']))
+        time.sleep(10)
 
 if __name__ == '__main__':
     main()
